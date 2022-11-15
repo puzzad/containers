@@ -1,0 +1,35 @@
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '33 3 * * *'
+  push:
+    paths-ignore:
+      - '**/Containerfile'
+      - '**/Dockerfile'
+      - '.github/**'
+      - 'READNE.md'
+name: update
+concurrency: dockerfiles
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@master
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version-file: './go.mod'
+      - name: Update
+        env:
+          REGISTRY: ghcr.io/puzzad/containers/
+          REGISTRY_USER: ${{ github.repository_owner }}
+          REGISTRY_PASS: ${{ github.token }}
+          SOURCE_LINK: https://github.com/puzzad/containers/
+        run:  |
+          go install github.com/csmith/contempt/cmd/contempt@latest
+          git config user.name "Github Actions"
+          git config user.email "<>"
+          buildah login -u "$REGISTRY_USER" -p "$REGISTRY_PASS" $REGISTRY
+          contempt --commit --build --push . .
+          git push
