@@ -1,5 +1,5 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"regexurl:supabase-postgres":"14.1.0.91"}
+# BOM: {"regexurl:supabase-postgres":"14.1.0.92"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
@@ -7,7 +7,7 @@ RUN go install github.com/tianon/gosu@latest
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as pgbase
 
 #Get Various versions
-ARG TAG=14.1.0.91
+ARG TAG=14.1.0.92
 
 #Install dependencies
 RUN set -eux; \
@@ -88,7 +88,7 @@ ENV LC_ALL en_US.UTF-8
 
 ENV PGDATA /var/lib/postgresql/data
 
-ARG TAG=14.1.0.91
+ARG TAG=14.1.0.92
 
 COPY --from=go /go/bin/gosu /usr/bin/gosu
 COPY --from=pgbase /usr/lib/postgresql14/ /usr/lib/postgresql14/
