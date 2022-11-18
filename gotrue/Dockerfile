@@ -1,11 +1,11 @@
 # Generated from https://github.com/puzzad/containers/gotrue/Dockerfile.gotpl
-# BOM: {"github:supabase/gotrue":"v2.32.0"}
+# BOM: {"github:puzzad/gotrue":"v1.0"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as build
 
-ARG TAG=v2.32.0
+ARG TAG=v1.0
 RUN apk add build-base
-RUN git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/supabase/gotrue /go/src/github.com/netlify/gotrue;
+RUN git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/puzzad/gotrue /go/src/github.com/netlify/gotrue;
 WORKDIR /go/src/github.com/netlify/gotrue
 RUN make deps
 RUN make build
