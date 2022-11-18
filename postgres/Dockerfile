@@ -22,7 +22,7 @@ ARG TAP=v1.2.0
 #Install dependencies
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
-    apk add build-base make automake autoconf git libpq-dev postgresql${MAJORVERSION}-dev curl-dev libsodium-dev; \
+    apk add build-base make automake autoconf git libpq-dev postgresql${MAJORVERSION}-dev curl-dev libsodium-dev gcompat; \
     git config --global advice.detachedHead false
 
 #Install pgaudit
@@ -119,7 +119,8 @@ RUN set -eux; \
         bash \
 	libcurl \
         libsodium-dev \
-	libsodium; \
+	libsodium \
+        gcompat; \
     rm -rf /var/cache/apk/*; \
     mkdir -p /etc/postgresql-custom/; \
     chown -R postgres:postgres /etc/postgresql-custom/; \
@@ -138,9 +139,12 @@ COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2 /etc/postgresql/pg_hba.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_ident.conf.j2 /etc/postgresql/pg_ident.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql-stdout-log.conf /etc/postgresql/logging.conf
-COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
+#COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
 
-RUN /usr/share/postgresql14/extension/pgsodium_getkey
+RUN \
+    mkdir -p /docker-entrypoint-initdb.d; \
+    chmod 777 /docker-entrypoint-initdb.d; \
+    /usr/share/postgresql14/extension/pgsodium_getkey
 
 VOLUME /var/lib/postgresql/data
 STOPSIGNAL SIGINT
