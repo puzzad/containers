@@ -19,7 +19,7 @@ ARG TAP={{github_tag "theory/pgtap/"}}
 #Install dependencies
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
-    apk add build-essential libpq-dev postgresql${MAJORVERSION}-dev curl-dev libsodium-dev gcompat; \
+    apk add build-base make automake autoconf git libpq-dev postgresql${MAJORVERSION}-dev curl-dev libsodium-dev gcompat; \
     git config --global advice.detachedHead false
 
 #Install pgaudit
