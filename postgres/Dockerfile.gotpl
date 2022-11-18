@@ -1,7 +1,25 @@
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as pgbase
+FROM debian:stable-slim as deb
+
+RUN set -eux; \
+     apt update; \
+     apt install -y curl gpg lsb-release; \
+     curl -Ss http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/postgres.gpg; \
+     echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
+     echo "Package: *" > /etc/apt/preferences.d/postgres.pref; \
+     echo "Pin: release o=apt.postgresql.org" >> /etc/apt/preferences.d/postgres.pref; \
+     echo "Pin-Priority: 500" >> /etc/apt/preferences.d/postgres.pref; \
+     apt update;
+
+RUN set -eux; \
+     apt install -y --no-install-recommends \
+	libsodium23 \
+	curl; \
+     rm -rf /var/lib/apt/lists/*;
+
+FROM deb as pgbase
 
 #Get Various versions
 ARG POSTGRES={{regex_url_content "supabase-postgres" "https://raw.githubusercontent.com/supabase/postgres/develop/common.vars.pkr.hcl" "\"(.*?)\""}}
@@ -19,7 +37,17 @@ ARG TAP={{github_tag "theory/pgtap/"}}
 #Install dependencies
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
-    apk add build-base make automake autoconf git libpq-dev postgresql${MAJORVERSION}-dev curl-dev libsodium-dev gcompat; \
+    apt update; \
+    apt install -y --no-install-recommends \
+	build-essential \
+	git \
+	libpq-dev \
+	postgresql-server-dev-${MAJORVERSION} \
+	postgresql-${MAJORVERSION} \
+	libkrb5-dev \
+	libsodium-dev \
+	libcurl4-openssl-dev; \
+    rm -rf /var/lib/apt/lists/*; \
     git config --global advice.detachedHead false
 
 #Install pgaudit
@@ -93,32 +121,31 @@ RUN set -eux; \
     echo "# IPv6 external connections" >> /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2; \
     echo "host  all  all  ::/0          scram-sha-256" >> /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2; \
     sed -i "s/shared_preload_libraries.*/shared_preload_libraries = 'pg_stat_statements, pg_stat_monitor, pgaudit, pg_cron, pg_net, pgsodium'/" /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
-    echo "pgsodium.getkey_script = '/usr/share/postgresql14/extension/pgsodium_getkey'" >> /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
-    cp /src/supabase/ansible/files/pgsodium_getkey_urandom.sh.j2 /usr/share/postgresql14/extension/pgsodium_getkey; \
-    chmod +x /usr/share/postgresql14/extension/pgsodium_getkey;
+    echo "pgsodium.getkey_script = '/usr/share/postgresql/14/extension/pgsodium_getkey'" >> /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
+    cp /src/supabase/ansible/files/pgsodium_getkey_urandom.sh.j2 /usr/share/postgresql/14/extension/pgsodium_getkey; \
+    chmod +x /usr/share/postgresql/14/extension/pgsodium_getkey;
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM deb
+
+ENV PGDATA /var/lib/postgresql/data
+ENV PATH /usr/lib/postgresql/14/bin:$PATH
 
 ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-ENV PGDATA /var/lib/postgresql/data
-
 ARG POSTGRES={{regex_url_content "supabase-postgres" "https://raw.githubusercontent.com/supabase/postgres/develop/common.vars.pkr.hcl" "\"(.*?)\""}}
 
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
-    apk add \
-	postgresql${MAJORVERSION} \
-        postgresql${MAJORVERSION}-jit \
-        postgresql${MAJORVERSION}-contrib \
+    apt update; \
+    apt install -y --no-install-recommends  \
+	postgresql-${MAJORVERSION} \
         bash \
-	libcurl \
-        libsodium-dev \
-	libsodium \
-        gcompat; \
-    rm -rf /var/cache/apk/*; \
+	locales \
+	libcurl4 \
+	libsodium23; \
+    rm -rf /var/lib/apt/lists/*; \
     mkdir -p /etc/postgresql-custom/; \
     chown -R postgres:postgres /etc/postgresql-custom/; \
     chmod 777 /etc/postgresql-custom/; \
@@ -126,11 +153,17 @@ RUN set -eux; \
     chown -R postgres:postgres "$PGDATA"; \
     chmod 777 "$PGDATA"; \
     mkdir -p /run/postgresql; \
-    chmod 777 /run/postgresql;
+    chmod 777 /run/postgresql; \
+    echo "LC_ALL=en_US.UTF-8" >> /etc/environment; \
+    echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen; \
+    echo "LANG=en_US.UTF-8" > /etc/locale.conf; \
+    update-locale "en_US.UTF-8"; \
+    locale-gen --purge "en_US.UTF-8"; \
+    dpkg-reconfigure --frontend noninteractive locales
 
 COPY --from=go /go/bin/gosu /usr/bin/gosu
-COPY --from=pgbase /usr/lib/postgresql14/ /usr/lib/postgresql14/
-COPY --from=pgbase /usr/share/postgresql14/extension /usr/share/postgresql14/extension
+COPY --from=pgbase /usr/lib/postgresql/14/ /usr/lib/postgresql/14/
+COPY --from=pgbase /usr/share/postgresql/14/extension /usr/share/postgresql/14/extension
 COPY --from=pgbase /src/postgres/docker-entrypoint.sh /docker-entrypoint.sh
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2 /etc/postgresql/postgresql.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2 /etc/postgresql/pg_hba.conf
@@ -141,7 +174,8 @@ COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql-stdo
 RUN \
     mkdir -p /docker-entrypoint-initdb.d; \
     chmod 777 /docker-entrypoint-initdb.d; \
-    /usr/share/postgresql14/extension/pgsodium_getkey
+    /usr/share/postgresql/14/extension/pgsodium_getkey; \
+    echo $PATH
 
 VOLUME /var/lib/postgresql/data
 STOPSIGNAL SIGINT
