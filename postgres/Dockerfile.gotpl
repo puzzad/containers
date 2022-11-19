@@ -33,6 +33,7 @@ ARG SODIUM={{github_tag "michelp/pgsodium"}}
 ARG CRON={{github_tag "citusdata/pg_cron"}}
 ARG STAT={{github_tag "percona/pg_stat_monitor"}}
 ARG TAP={{github_tag "theory/pgtap/"}}
+ARG UPDATE={{github_tag "eradman/pg-safeupdate"}}
 
 #Install dependencies
 RUN set -eux; \
@@ -111,6 +112,12 @@ RUN set -eux; \
     cd /src/tap; \
     make install
 
+#Install safeupdate
+RUN set -eux; \
+    git clone ---depth=1 -b $UPDATE --single-branch github.com/eradman/pg-safeupdate /src/update; \
+    cd /src/update; \
+    gmake install
+
 #Get postgres for entrypoint
 RUN set -eux; \
     git clone https://github.com/docker-library/postgres /src/postgres;
@@ -169,7 +176,7 @@ COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2 /etc/postgresql/pg_hba.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_ident.conf.j2 /etc/postgresql/pg_ident.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql-stdout-log.conf /etc/postgresql/logging.conf
-#COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
+COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
 
 RUN \
     mkdir -p /docker-entrypoint-initdb.d; \
