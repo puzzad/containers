@@ -1,14 +1,10 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_graphql":"v0.5.1","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_graphql":"v0.5.1","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","image:rust":"0dffb235c99f55d609e497e390fea2217898e091969001bcb0c441979b16a1f3","regexurl:supabase-postgres":"14.1.0.94"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
 
-FROM debian:stable-slim as deb
-
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
-ENV PATH=/opt/rust/bin:$PATH
+FROM ghcr.io/puzzad/containers/rust@sha256:0dffb235c99f55d609e497e390fea2217898e091969001bcb0c441979b16a1f3 as deb
 
 RUN set -eux; \
      apt update; \
@@ -69,10 +65,6 @@ RUN set -eux; \
 	zlib1g \
         coreutils \
 	zlib1g-dev; \
-    curl -Ss https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o rustup-init; \
-    chmod +x rustup-init; \
-    ./rustup-init -y --default-toolchain stable --profile minimal --no-modify-path; \
-    cargo install --locked cargo-pgx; \
     rm -rf /var/lib/apt/lists/*; \
     git config --global advice.detachedHead false
 
@@ -185,7 +177,10 @@ RUN set -eux; \
     sed -i "s/shared_preload_libraries.*/shared_preload_libraries = 'pg_stat_statements, pg_stat_monitor, pgaudit, pg_cron, pg_net, pgsodium'/" /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
     echo "pgsodium.getkey_script = '/usr/share/postgresql/14/extension/pgsodium_getkey'" >> /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
     cp /src/supabase/ansible/files/pgsodium_getkey_urandom.sh.j2 /usr/share/postgresql/14/extension/pgsodium_getkey; \
-    chmod +x /usr/share/postgresql/14/extension/pgsodium_getkey;
+    chmod +x /usr/share/postgresql/14/extension/pgsodium_getkey; \
+    rm /src/supabase/migrations/db/migrations/10000000000000_demote-postgres.sql; \
+    cp /src/supabase/ansible/files/pgbouncer_config/pgbouncer_auth_schema.sql /src/supabase/migrations/db/migrations/10000000000000_pgbouncer.sql; \ 
+    cp /src/supabase/migrations/schema.sql /src/supabase/migrations/db/migrations/10000000000001_schema.sql
 
 FROM deb
 
