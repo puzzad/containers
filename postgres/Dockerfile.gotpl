@@ -1,11 +1,7 @@
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
 
-FROM debian:stable-slim as deb
-
-ENV RUSTUP_HOME=/opt/rust
-ENV CARGO_HOME=/opt/rust
-ENV PATH=/opt/rust/bin:$PATH
+FROM {{image "rust"}} as deb
 
 RUN set -eux; \
      apt update; \
@@ -66,10 +62,6 @@ RUN set -eux; \
 	zlib1g \
         coreutils \
 	zlib1g-dev; \
-    curl -Ss https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o rustup-init; \
-    chmod +x rustup-init; \
-    ./rustup-init -y --default-toolchain stable --profile minimal --no-modify-path; \
-    cargo install --locked cargo-pgx; \
     rm -rf /var/lib/apt/lists/*; \
     git config --global advice.detachedHead false
 
