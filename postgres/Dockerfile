@@ -179,8 +179,7 @@ RUN set -eux; \
     cp /src/supabase/ansible/files/pgsodium_getkey_urandom.sh.j2 /usr/share/postgresql/14/extension/pgsodium_getkey; \
     chmod +x /usr/share/postgresql/14/extension/pgsodium_getkey; \
     rm /src/supabase/migrations/db/migrations/10000000000000_demote-postgres.sql; \
-    cp /src/supabase/ansible/files/pgbouncer_config/pgbouncer_auth_schema.sql /src/supabase/migrations/db/migrations/10000000000000_pgbouncer.sql; \ 
-    cp /src/supabase/migrations/schema.sql /src/supabase/migrations/db/migrations/10000000000001_schema.sql
+    cp /src/supabase/ansible/files/pgbouncer_config/pgbouncer_auth_schema.sql /src/supabase/migrations/db/migrations/10000000000000_pgbouncer.sql;
 
 FROM deb
 
