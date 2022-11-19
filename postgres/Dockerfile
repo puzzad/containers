@@ -1,26 +1,31 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_graphql":"v0.5.1","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
 
 FROM debian:stable-slim as deb
 
-RUN set -eux; \
-     apt update; \
-     apt install -y curl gpg lsb-release; \
-     curl -Ss http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/postgres.gpg; \
-     echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
-     echo "Package: *" > /etc/apt/preferences.d/postgres.pref; \
-     echo "Pin: release o=apt.postgresql.org" >> /etc/apt/preferences.d/postgres.pref; \
-     echo "Pin-Priority: 500" >> /etc/apt/preferences.d/postgres.pref; \
-     apt update;
+ENV RUSTUP_HOME=/opt/rust
+ENV CARGO_HOME=/opt/rust
+ENV PATH=/opt/rust/bin:$PATH
 
 RUN set -eux; \
-     apt install -y --no-install-recommends \
+     apt update; \
+     apt install -y --no-install-recommends --no-install-suggests \
+	gpg \
+	lsb-release \
+	ca-certificates \
 	libsodium23 \
-	curl; \
-     rm -rf /var/lib/apt/lists/*;
+        curl; \
+    curl -Ss http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | gpg --dearmor > /etc/apt/trusted.gpg.d/postgres.gpg; \
+    echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list; \
+    echo "Package: *" > /etc/apt/preferences.d/postgres.pref; \
+    echo "Pin: release o=apt.postgresql.org" >> /etc/apt/preferences.d/postgres.pref; \
+    echo "Pin-Priority: 500" >> /etc/apt/preferences.d/postgres.pref; \
+    rm -rf /var/lib/apt/lists/*; \
+    apt update; \
+    apt upgrade -y
 
 FROM deb as pgbase
 
@@ -42,7 +47,7 @@ ARG UPDATE=1.4
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
     apt update; \
-    apt install -y --no-install-recommends \
+    apt install -y --no-install-recommends --no-install-suggests \
 	build-essential \
 	git \
 	libpq-dev \
@@ -50,7 +55,24 @@ RUN set -eux; \
 	postgresql-${MAJORVERSION} \
 	libkrb5-dev \
 	libsodium-dev \
-	libcurl4-openssl-dev; \
+	libcurl4-openssl-dev \
+	libtool \
+	automake \
+	autoconf \
+	pkgconf \
+	libevent-dev \
+	pandoc \
+	libreadline-dev \
+	bison \
+	flex \
+	libreadline8 \
+	zlib1g \
+        coreutils \
+	zlib1g-dev; \
+    curl -Ss https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o rustup-init; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --default-toolchain stable --profile minimal --no-modify-path; \
+    cargo install --locked cargo-pgx; \
     rm -rf /var/lib/apt/lists/*; \
     git config --global advice.detachedHead false
 
@@ -121,6 +143,36 @@ RUN set -eux; \
     cd /src/update; \
     gmake install
 
+#Install bouncer
+ARG BOUNCER=pgbouncer_1_17_0
+RUN set -eux; \
+    git clone --depth=1 -b $BOUNCER --single-branch --recursive https://github.com/pgbouncer/pgbouncer.git /src/bouncer; \
+    cd /src/bouncer; \
+    ./autogen.sh; \
+    ./configure; \
+    make install
+
+#install pg_Graphql
+ARG QL=v0.5.1
+RUN set -eux; \
+    git clone --depth=1 -b $QL --single-branch https://github.com/supabase/pg_graphql /src/ql; \
+    cd /src/ql; \
+    sed -i 's/alpha.1/alpha.2/g' Cargo.toml; \
+    cat Cargo.toml; \
+    chown -R postgres:postgres /src/ql; \
+    chown -R postgres:postgres /opt/rust; \
+    chown -R postgres:postgres /usr/share/postgresql/14/extension/; \
+    chown -R postgres:postgres /usr/lib/postgresql/14/lib/;
+
+USER postgres
+RUN set -eux; \
+    cd /src/ql; \
+    cargo install --version 0.6.0-alpha.2 cargo-pgx; \
+    cargo pgx init --pg14 /usr/bin/pg_config; \
+    cargo pgx install -c /usr/bin/pg_config --features pg14 --release
+
+USER root
+
 #Get postgres for entrypoint
 RUN set -eux; \
     git clone https://github.com/docker-library/postgres /src/postgres;
@@ -149,11 +201,12 @@ ARG POSTGRES=14.1.0.94
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
     apt update; \
-    apt install -y --no-install-recommends  \
+    apt-get install -y --no-install-recommends  \
 	postgresql-${MAJORVERSION} \
         bash \
 	locales \
 	libcurl4 \
+        libevent-2. \
 	libsodium23; \
     rm -rf /var/lib/apt/lists/*; \
     mkdir -p /etc/postgresql-custom/; \
