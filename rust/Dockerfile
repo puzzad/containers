@@ -1,7 +1,7 @@
-# Generated from https://github.com/greboid/dockerfiles/blob/master/rust/Dockerfile.gotpl
+# Generated from https://github.com/puzzad/containers/rust/Dockerfile.gotpl
 # BOM: {"github:rust-lang/rust":"1.65.0"}
 
-FROM debian:stable-slim as deb
+FROM debian:stable-slim
 
 ARG TAG1.65.0
 
@@ -19,5 +19,5 @@ RUN set -eux; \
         curl; \
     curl -Ss https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init -o rustup-init; \
     chmod +x rustup-init; \
-    ./rustup-init -y --default-toolchain stable --profile minimal --no-modify-path;
+    ./rustup-init -y --default-toolchain stable --profile minimal --no-modify-path; \
     rm -rf /var/lib/apt/lists/*; \
