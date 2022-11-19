@@ -1,5 +1,5 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
@@ -36,6 +36,7 @@ ARG SODIUM=v3.0.6
 ARG CRON=v1.4.2
 ARG STAT=1.1.1
 ARG TAP=v1.2.0
+ARG UPDATE=1.4
 
 #Install dependencies
 RUN set -eux; \
@@ -114,6 +115,12 @@ RUN set -eux; \
     cd /src/tap; \
     make install
 
+#Install safeupdate
+RUN set -eux; \
+    git clone --depth=1 -b $UPDATE --single-branch https://github.com/eradman/pg-safeupdate /src/update; \
+    cd /src/update; \
+    gmake install
+
 #Get postgres for entrypoint
 RUN set -eux; \
     git clone https://github.com/docker-library/postgres /src/postgres;
@@ -172,7 +179,7 @@ COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_hba.conf.j2 /etc/postgresql/pg_hba.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/pg_ident.conf.j2 /etc/postgresql/pg_ident.conf
 COPY --from=pgbase /src/supabase/ansible/files/postgresql_config/postgresql-stdout-log.conf /etc/postgresql/logging.conf
-#COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
+COPY --from=pgbase /src/supabase/migrations/db/ /docker-entrypoint-initdb.d/
 
 RUN \
     mkdir -p /docker-entrypoint-initdb.d; \
