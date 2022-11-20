@@ -1,10 +1,10 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_graphql":"v0.5.1","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","image:rust":"0dffb235c99f55d609e497e390fea2217898e091969001bcb0c441979b16a1f3","regexurl:supabase-postgres":"14.1.0.94"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.94"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
 
-FROM ghcr.io/puzzad/containers/rust@sha256:0dffb235c99f55d609e497e390fea2217898e091969001bcb0c441979b16a1f3 as deb
+FROM debian:stable-slim as deb
 
 RUN set -eux; \
      apt update; \
@@ -135,36 +135,6 @@ RUN set -eux; \
     cd /src/update; \
     gmake install
 
-#Install bouncer
-ARG BOUNCER=pgbouncer_1_17_0
-RUN set -eux; \
-    git clone --depth=1 -b $BOUNCER --single-branch --recursive https://github.com/pgbouncer/pgbouncer.git /src/bouncer; \
-    cd /src/bouncer; \
-    ./autogen.sh; \
-    ./configure; \
-    make install
-
-#install pg_Graphql
-ARG QL=v0.5.1
-RUN set -eux; \
-    git clone --depth=1 -b $QL --single-branch https://github.com/supabase/pg_graphql /src/ql; \
-    cd /src/ql; \
-    sed -i 's/alpha.1/alpha.2/g' Cargo.toml; \
-    cat Cargo.toml; \
-    chown -R postgres:postgres /src/ql; \
-    chown -R postgres:postgres /opt/rust; \
-    chown -R postgres:postgres /usr/share/postgresql/14/extension/; \
-    chown -R postgres:postgres /usr/lib/postgresql/14/lib/;
-
-USER postgres
-RUN set -eux; \
-    cd /src/ql; \
-    cargo install --version 0.6.0-alpha.2 cargo-pgx; \
-    cargo pgx init --pg14 /usr/bin/pg_config; \
-    cargo pgx install -c /usr/bin/pg_config --features pg14 --release
-
-USER root
-
 #Get postgres for entrypoint
 RUN set -eux; \
     git clone https://github.com/docker-library/postgres /src/postgres;
@@ -178,8 +148,12 @@ RUN set -eux; \
     echo "pgsodium.getkey_script = '/usr/share/postgresql/14/extension/pgsodium_getkey'" >> /src/supabase/ansible/files/postgresql_config/postgresql.conf.j2; \
     cp /src/supabase/ansible/files/pgsodium_getkey_urandom.sh.j2 /usr/share/postgresql/14/extension/pgsodium_getkey; \
     chmod +x /usr/share/postgresql/14/extension/pgsodium_getkey; \
+    echo "CREATE SCHEMA IF NOT exists extensions; CREATE EXTENSION IF NOT EXISTS pg_stat_statements with schema extensions;" > /src/supabase/migrations/db/migrations/10000000000001_pg_stat_stagements.sql; \
     rm /src/supabase/migrations/db/migrations/10000000000000_demote-postgres.sql; \
-    cp /src/supabase/ansible/files/pgbouncer_config/pgbouncer_auth_schema.sql /src/supabase/migrations/db/migrations/10000000000000_pgbouncer.sql;
+    cp /src/supabase/ansible/files/pgbouncer_config/pgbouncer_auth_schema.sql /src/supabase/migrations/db/migrations/10000000000000_pgbouncer.sql; \
+    rm /src/supabase/migrations/db/migrations/20220404205710_pg_graphql-on-by-default.sql; \
+    rm /src/supabase/migrations/db/migrations/20220613123923_pg_graphql-pg-dump-perms.sql; \
+    rm /src/supabase/migrations/db/migrations/20220317095840_pg_graphql.sql;
 
 FROM deb
 
@@ -197,6 +171,7 @@ RUN set -eux; \
     apt update; \
     apt-get install -y --no-install-recommends  \
 	postgresql-${MAJORVERSION} \
+        postgresql-contrib-${MAJORVERSION} \
         bash \
 	locales \
 	libcurl4 \
