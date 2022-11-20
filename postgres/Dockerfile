@@ -21,7 +21,14 @@ RUN set -eux; \
     echo "Pin-Priority: 500" >> /etc/apt/preferences.d/postgres.pref; \
     rm -rf /var/lib/apt/lists/*; \
     apt update; \
-    apt upgrade -y
+    apt upgrade -y; \
+    apt install -y --no-install-recommends --no-install-suggests \
+	libelogind0; \
+    rm -rf /var/lib/apt/lists/*; \
+    rm -rf /var/cache/apt/archives ; \
+    rm -rf /usr/share/doc/; \
+    rm -rf /usr/share/man/; \
+    rm -rf /usr/share/locale/;
 
 FROM deb as pgbase
 
@@ -66,6 +73,10 @@ RUN set -eux; \
         coreutils \
 	zlib1g-dev; \
     rm -rf /var/lib/apt/lists/*; \
+    rm -rf /var/cache/apt/archives ; \
+    rm -rf /usr/share/doc/; \
+    rm -rf /usr/share/man/; \
+    rm -rf /usr/share/locale/; \
     git config --global advice.detachedHead false
 
 #Install pgaudit
@@ -179,6 +190,12 @@ RUN set -eux; \
         libevent-2. \
 	libsodium23; \
     rm -rf /var/lib/apt/lists/*; \
+    rm -rf /var/cache/apt/archives ; \
+    rm -rf /usr/share/doc/; \
+    rm -rf /usr/share/man/; \
+    rm -rf /usr/share/locale/; \
+    apt install -y --no-install-recommends --no-install-suggests \
+	libelogind0; \
     mkdir -p /etc/postgresql-custom/; \
     chown -R postgres:postgres /etc/postgresql-custom/; \
     chmod 777 /etc/postgresql-custom/; \
