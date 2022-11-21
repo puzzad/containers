@@ -5,7 +5,7 @@ RUN set -eux; \
 
 FROM npm as checkout
 
-ARG TAG=v0.24.3
+ARG TAG={{github_tag "supabase/storage-api"}}
 
 RUN set -eux; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/supabase/storage-api.git /app;
