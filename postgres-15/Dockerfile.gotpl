@@ -1,4 +1,4 @@
-FROM {{image "alpine"}} as build
+FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
 
 ARG ARCHIVE_URL="{{postgres15_url}}"
 ARG ARCHIVE_SUM="{{postgres15_checksum}}"
@@ -37,7 +37,7 @@ RUN set -eux; \
       apk info -qL ${dep} | rsync -aq --files-from=- / /rootfs/; \
     done;
 
-FROM {{image "base"}}
+FROM ghcr.io/greboid/dockerfiles/base:latest 
 
 ENV LANG en_US.utf8
 ENV PGDATA=/var/lib/postgres/data
