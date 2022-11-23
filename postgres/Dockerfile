@@ -1,5 +1,5 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.6","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.95"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.7","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.95"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
@@ -40,7 +40,7 @@ ARG HTTP=v1.5.0
 ARG WALJSON=wal2json_2_5
 ARG NET=v0.6.1
 ARG HASHIDS=v1.2.1
-ARG SODIUM=v3.0.6
+ARG SODIUM=v3.0.7
 ARG CRON=v1.4.2
 ARG STAT=1.1.1
 ARG TAP=v1.2.0
