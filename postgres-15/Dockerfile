@@ -89,6 +89,7 @@ ENV PGHOST=127.0.0.1
 ENV PGUSER=postgres
 
 COPY --from=build /bin/sh /bin/sh
+COPY --from=build /bin/more /bin/more
 COPY --from=build /usr/bin/locale /usr/bin/locale
 COPY --from=build /rootfs/ /
 COPY --from=build /usr/local/pgsql /usr/local/
