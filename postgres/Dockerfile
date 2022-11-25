@@ -1,5 +1,5 @@
 # Generated from https://github.com/puzzad/containers/postgres/Dockerfile.gotpl
-# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.7","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.97"}
+# BOM: {"github:citusdata/pg_cron":"v1.4.2","github:eradman/pg-safeupdate":"1.4","github:iCyberon/pg_hashids":"v1.2.1","github:michelp/pgsodium":"v3.0.7","github:percona/pg_stat_monitor":"1.1.1","github:pgaudit/pgaudit":"1.7.0","github:pramsey/pgsql-http":"v1.5.0","github:supabase/pg_net":"v0.6.1","github:theory/pgtap/":"v1.2.0","regexurl:supabase-postgres":"14.1.0.98"}
 
 FROM ghcr.io/greboid/dockerfiles/golang:latest as go
 RUN go install github.com/tianon/gosu@latest
@@ -33,7 +33,7 @@ RUN set -eux; \
 FROM deb as pgbase
 
 #Get Various versions
-ARG POSTGRES=14.1.0.97
+ARG POSTGRES=14.1.0.98
 ARG AUDIT=1.7.0
 ARG JWT=9742dab1b2f297ad3811120db7b21451bca2d3c9
 ARG HTTP=v1.5.0
@@ -176,7 +176,7 @@ ENV LANGUAGE en_US.UTF-8
 ENV LANG en_US.UTF-8
 ENV LC_ALL en_US.UTF-8
 
-ARG POSTGRES=14.1.0.97
+ARG POSTGRES=14.1.0.98
 
 RUN set -eux; \
     MAJORVERSION=$(echo $POSTGRES | cut -d. -f1); \
