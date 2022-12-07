@@ -1,11 +1,11 @@
 # Generated from https://github.com/puzzad/containers/kong/Dockerfile.gotpl
-# BOM: {"github:kong/docker-kong":"3.0.1","github:kong/kong":"3.0.1"}
+# BOM: {"github:kong/docker-kong":"3.1.0","github:kong/kong":"3.1.0"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest
 
-ARG KONG_VERSION=3.0.1
+ARG KONG_VERSION=3.1.0
 ENV KONG_VERSION $KONG_VERSION
-ENV TAG=3.0.1
+ENV TAG=3.1.0
 
 RUN set -ex; \
      apk add bash curl ca-certificates git; \
