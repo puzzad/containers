@@ -1,9 +1,9 @@
 # Generated from https://github.com/puzzad/containers/meta/Dockerfile.gotpl
-# BOM: {"github:supabase/postgres-meta":"v0.53.1"}
+# BOM: {"github:supabase/postgres-meta":"v0.54.0"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as app
 
-ARG TAG=v0.53.1
+ARG TAG=v0.54.0
 
 RUN set -eux; \
     apk add npm git python3 g++ make bash; \
