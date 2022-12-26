@@ -1,9 +1,9 @@
 # Generated from https://github.com/puzzad/containers/meta/Dockerfile.gotpl
-# BOM: {"github:supabase/postgres-meta":"v0.55.1"}
+# BOM: {"github:supabase/postgres-meta":"v0.55.2"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as app
 
-ARG TAG=v0.55.1
+ARG TAG=v0.55.2
 
 RUN set -eux; \
     apk add npm git python3 g++ make bash; \
@@ -14,18 +14,20 @@ RUN set -eux; \
     npm clean-install; \
     cd /app; \
     cp -r /dep/node_modules .; \
-    npm run build:server;
+    npm run build;
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest
 
-RUN apk add npm
+RUN apk add nodejs
 
-WORKDIR /usr/src/app
+WORKDIR /app
 COPY --from=app /app/node_modules node_modules
-COPY --from=app /app/bin bin
+COPY --from=app /app/dist dist
 COPY --from=app /app/package.json ./
 COPY --from=app /app/package-lock.json ./
 
+RUN ls -lR /app
+
 ENV PG_META_PORT=8080
 EXPOSE 8080
-CMD ["npm", "run", "start"]
+CMD ["node", "dist/server/app.js"]
