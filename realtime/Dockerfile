@@ -1,9 +1,9 @@
 # Generated from https://github.com/puzzad/containers/realtime/Dockerfile.gotpl
-# BOM: {"github:supabase/realtime":"v2.0.0"}
+# BOM: {"github:supabase/realtime":"v2.0.2"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
 
-ARG TAG=v2.0.0
+ARG TAG=v2.0.2
 
 ENV MIX_ENV=prod \
     DB_SSL=false
