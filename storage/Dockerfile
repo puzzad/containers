@@ -1,5 +1,5 @@
 # Generated from https://github.com/puzzad/containers/storage/Dockerfile.gotpl
-# BOM: {"github:supabase/storage-api":"v0.27.1"}
+# BOM: {"github:supabase/storage-api":"v0.27.3"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as npm
 
@@ -8,7 +8,7 @@ RUN set -eux; \
 
 FROM npm as checkout
 
-ARG TAG=v0.27.1
+ARG TAG=v0.27.3
 
 RUN set -eux; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/supabase/storage-api.git /app;
