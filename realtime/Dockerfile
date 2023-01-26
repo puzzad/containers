@@ -1,32 +1,30 @@
 # Generated from https://github.com/puzzad/containers/realtime/Dockerfile.gotpl
-# BOM: {"github:supabase/realtime":"v2.3.0"}
+# BOM: {}
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
 
-ARG TAG=v2.3.0
+ARG TAG=v1.0.0
 
 ENV MIX_ENV=prod \
     DB_SSL=false
 
 RUN set -eux; \
-    apk add elixir git npm; \
+    apk add elixir git; \
     mix local.hex --force && mix local.rebar --force; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/supabase/realtime.git /app; \
     cd /app;
 RUN set -eux; \
-    cd /app; \
-    mix deps.get --only $MIX_ENV; \
+    cd /app/server; \
+    ls; \
+    mix deps.get; \
     mix deps.compile; \
-    cd assets; \
-    npm install; \
-    cd ..; \
-    mix assets.deploy; \
-    mix compile; \
     mix release
 
 FROM ghcr.io/greboid/dockerfiles/alpine:latest
 
 RUN apk add openssl bash libstdc++ libgcc
 WORKDIR /app
-COPY --from=build /app/_build /app
-CMD ["/app/_build/prod/rel/realtime", "start"]
+COPY --from=build /app/server/_build /app
+COPY --from=build /app/docker-entrypoint.sh /app/docker-entrypoint.sh
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD ["/app/prod/rel/realtime/bin/realtime", "start"]
