@@ -1,6 +1,6 @@
 FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
 
-ARG TAG={{github_tag "supabase/realtime"}}
+ARG TAG=v1.0.0
 
 ENV MIX_ENV=prod \
     DB_SSL=false
