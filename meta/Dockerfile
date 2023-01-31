@@ -1,9 +1,9 @@
 # Generated from https://github.com/puzzad/containers/meta/Dockerfile.gotpl
-# BOM: {"github:supabase/postgres-meta":"v0.60.5"}
+# BOM: {"github:supabase/postgres-meta":"v0.60.6","image:ghcr.io/greboid/dockerfiles/alpine":"c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as app
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf as app
 
-ARG TAG=v0.60.5
+ARG TAG=v0.60.6
 
 RUN set -eux; \
     apk add npm git python3 g++ make bash; \
@@ -16,7 +16,7 @@ RUN set -eux; \
     cp -r /dep/node_modules .; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf
 
 RUN apk add nodejs
 
