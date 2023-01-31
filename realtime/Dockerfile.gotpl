@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}} as build
 
 ARG TAG=v1.0.0
 
@@ -17,7 +17,7 @@ RUN set -eux; \
     mix deps.compile; \
     mix release
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}}
 
 RUN apk add openssl bash libstdc++ libgcc
 WORKDIR /app

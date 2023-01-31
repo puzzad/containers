@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/golang:latest as go
+FROM {{image "ghcr.io/greboid/dockerfiles/golang"}} as go
 RUN go install github.com/tianon/gosu@latest
 
 FROM debian:stable-slim as deb

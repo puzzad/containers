@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as app
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}} as app
 
 ARG TAG={{github_tag "supabase/postgres-meta"}}
 
@@ -13,7 +13,7 @@ RUN set -eux; \
     cp -r /dep/node_modules .; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}}
 
 RUN apk add nodejs
 

@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as npm
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}} as npm
 
 RUN set -eux; \
     apk add npm git python3 g++ make;
@@ -28,7 +28,7 @@ RUN set -eux; \
     npm ci; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}}
 
 COPY --from=checkout /app/migrations /migrations
 COPY --from=checkout /app/ecosystem.config.js /ecosystem.config.js

@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}}
 
 ARG KONG_VERSION={{github_tag "kong/kong"}}
 ENV KONG_VERSION $KONG_VERSION

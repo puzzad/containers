@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/golang:latest as build
+FROM {{image "ghcr.io/greboid/dockerfiles/golang"}} as build
 
 ARG TAG={{github_tag "puzzad/gotrue"}}
 RUN apk add build-base

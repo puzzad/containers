@@ -1,4 +1,4 @@
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
+FROM {{image "ghcr.io/greboid/dockerfiles/alpine"}} as build
 
 ARG TAG={{github_tag "postgrest/postgrest"}}
 
