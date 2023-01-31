@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/realtime/Dockerfile.gotpl
-# BOM: {}
+# BOM: {"image:ghcr.io/greboid/dockerfiles/alpine":"c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as build
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf as build
 
 ARG TAG=v1.0.0
 
@@ -20,7 +20,7 @@ RUN set -eux; \
     mix deps.compile; \
     mix release
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf
 
 RUN apk add openssl bash libstdc++ libgcc
 WORKDIR /app
