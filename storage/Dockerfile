@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/storage/Dockerfile.gotpl
-# BOM: {"github:supabase/storage-api":"v0.28.2"}
+# BOM: {"github:supabase/storage-api":"v0.28.2","image:ghcr.io/greboid/dockerfiles/alpine":"c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest as npm
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf as npm
 
 RUN set -eux; \
     apk add npm git python3 g++ make;
@@ -31,7 +31,7 @@ RUN set -eux; \
     npm ci; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine:latest
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf
 
 COPY --from=checkout /app/migrations /migrations
 COPY --from=checkout /app/ecosystem.config.js /ecosystem.config.js
