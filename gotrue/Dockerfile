@@ -1,9 +1,9 @@
 # Generated from https://github.com/puzzad/containers/gotrue/Dockerfile.gotpl
-# BOM: {"github:puzzad/gotrue":"v1.1","image:ghcr.io/greboid/dockerfiles/golang":"ada409e9ecb72011eb4bcddfa2ccbb9cb08804c14a8dd1e440f398e93b9285b9"}
+# BOM: {"github:puzzad/gotrue":"v1.3","image:ghcr.io/greboid/dockerfiles/golang":"7177b33c179dc7137e7fc5f678aa0f128384b934b93b920b0efefe5b1cbb4ac7"}
 
-FROM ghcr.io/greboid/dockerfiles/golang@sha256:ada409e9ecb72011eb4bcddfa2ccbb9cb08804c14a8dd1e440f398e93b9285b9 as build
+FROM ghcr.io/greboid/dockerfiles/golang@sha256:7177b33c179dc7137e7fc5f678aa0f128384b934b93b920b0efefe5b1cbb4ac7 as build
 
-ARG TAG=v1.1
+ARG TAG=v1.3
 RUN apk add build-base
 RUN git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/puzzad/gotrue /go/src/github.com/netlify/gotrue;
 WORKDIR /go/src/github.com/netlify/gotrue
@@ -16,8 +16,10 @@ RUN adduser -D -u 1000 netlify
 RUN apk add --no-cache ca-certificates
 COPY --from=build /go/src/github.com/netlify/gotrue/gotrue /usr/local/bin/gotrue
 COPY --from=build /go/src/github.com/netlify/gotrue/migrations /usr/local/etc/gotrue/migrations/
+COPY --from=build /go/src/github.com/netlify/gotrue/templates /usr/local/etc/gotrue/templates/
 
 ENV GOTRUE_DB_MIGRATIONS_PATH /usr/local/etc/gotrue/migrations
+ENV TEMPLATE_DIR /usr/local/etc/gotrue/templates
 
 USER netlify
 CMD ["gotrue"]
