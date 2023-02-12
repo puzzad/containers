@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/kong/Dockerfile.gotpl
-# BOM: {"github:kong/docker-kong":"3.1.1","github:kong/kong":"3.1.1","image:ghcr.io/greboid/dockerfiles/alpine":"c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf"}
+# BOM: {"github:kong/docker-kong":"3.1.1","github:kong/kong":"3.1.1","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d
 
 ARG KONG_VERSION=3.1.1
 ENV KONG_VERSION $KONG_VERSION
