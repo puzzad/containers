@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/storage/Dockerfile.gotpl
-# BOM: {"github:supabase/storage-api":"v0.28.2","image:ghcr.io/greboid/dockerfiles/alpine":"c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf"}
+# BOM: {"github:supabase/storage-api":"v0.28.2","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf as npm
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d as npm
 
 RUN set -eux; \
     apk add npm git python3 g++ make;
@@ -31,7 +31,7 @@ RUN set -eux; \
     npm ci; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:c14b3f57ce420de5e95142c7c8932716108789e552759b355e94df81159f4bbf
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d
 
 COPY --from=checkout /app/migrations /migrations
 COPY --from=checkout /app/ecosystem.config.js /ecosystem.config.js
