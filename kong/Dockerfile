@@ -1,11 +1,11 @@
 # Generated from https://github.com/puzzad/containers/kong/Dockerfile.gotpl
-# BOM: {"github:kong/docker-kong":"3.1.1","github:kong/kong":"3.1.1","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
+# BOM: {"github:kong/docker-kong":"3.2.2","github:kong/kong":"3.2.2","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
 
 FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d
 
-ARG KONG_VERSION=3.1.1
+ARG KONG_VERSION=3.2.2
 ENV KONG_VERSION $KONG_VERSION
-ENV TAG=3.1.1
+ENV TAG=3.2.2
 
 RUN set -ex; \
      apk add bash curl ca-certificates git; \
@@ -21,7 +21,6 @@ RUN set -ex; \
      chown kong:0 /usr/local/bin/kong; \
      chmod -R g=u /usr/local/kong; \
      rm -rf /tmp/kong.tar.gz; \
-     ln -s /usr/local/openresty/bin/resty /usr/local/bin/resty; \
      ln -s /usr/local/openresty/luajit/bin/luajit /usr/local/bin/luajit; \
      ln -s /usr/local/openresty/luajit/bin/luajit /usr/local/bin/lua; \
      ln -s /usr/local/openresty/nginx/sbin/nginx /usr/local/bin/nginx; \
