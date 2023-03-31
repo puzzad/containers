@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/postgrest/Dockerfile.gotpl
-# BOM: {"github:postgrest/postgrest":"v10.2.0.20230209","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
+# BOM: {"github:postgrest/postgrest":"v10.2.0.20230209","image:ghcr.io/greboid/dockerfiles/alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d as build
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as build
 
 ARG TAG=v10.2.0.20230209
 
