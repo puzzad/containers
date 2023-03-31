@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/meta/Dockerfile.gotpl
-# BOM: {"github:supabase/postgres-meta":"v0.62.0","image:ghcr.io/greboid/dockerfiles/alpine":"e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d"}
+# BOM: {"github:supabase/postgres-meta":"v0.62.0","image:ghcr.io/greboid/dockerfiles/alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d as app
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as app
 
 ARG TAG=v0.62.0
 
@@ -16,7 +16,7 @@ RUN set -eux; \
     cp -r /dep/node_modules .; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e3385453363598236b7e826530c55b70d4a1a3e53931d4e7b675d47c4c5c8f8d
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b
 
 RUN apk add nodejs
 
