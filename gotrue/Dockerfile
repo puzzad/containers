@@ -1,7 +1,7 @@
 # Generated from https://github.com/puzzad/containers/gotrue/Dockerfile.gotpl
-# BOM: {"github:puzzad/gotrue":"v1.4","image:ghcr.io/greboid/dockerfiles/golang":"20b7658093fc4e7748edddd67a45e19fe467d846b9fcf3ceaa37a5f84f672f14"}
+# BOM: {"github:puzzad/gotrue":"v1.4","image:ghcr.io/greboid/dockerfiles/golang":"efe52d68b2ef1f36464445df5d8be94172c8d2fcd4bdeee16b8e39623d012b6f"}
 
-FROM ghcr.io/greboid/dockerfiles/golang@sha256:20b7658093fc4e7748edddd67a45e19fe467d846b9fcf3ceaa37a5f84f672f14 as build
+FROM ghcr.io/greboid/dockerfiles/golang@sha256:efe52d68b2ef1f36464445df5d8be94172c8d2fcd4bdeee16b8e39623d012b6f as build
 
 ARG TAG=v1.4
 RUN apk add build-base
