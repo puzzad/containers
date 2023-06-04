@@ -1,14 +1,14 @@
 # Generated from https://github.com/puzzad/containers/storage/Dockerfile.gotpl
-# BOM: {"github:supabase/storage-api":"v0.37.9","image:ghcr.io/greboid/dockerfiles/alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b"}
+# BOM: {"github:supabase/storage-api":"v0.40.1","image:ghcr.io/greboid/dockerfiles/alpine":"0b5d59073fe11b8be58f75b47d7103dc11fa119b8173fbff47c4a00c4d9b89e6"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b as npm
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:0b5d59073fe11b8be58f75b47d7103dc11fa119b8173fbff47c4a00c4d9b89e6 as npm
 
 RUN set -eux; \
     apk add npm git python3 g++ make;
 
 FROM npm as checkout
 
-ARG TAG=v0.37.9
+ARG TAG=v0.40.1
 
 RUN set -eux; \
     git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/supabase/storage-api.git /app;
@@ -31,7 +31,7 @@ RUN set -eux; \
     npm ci; \
     npm run build;
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:0b5d59073fe11b8be58f75b47d7103dc11fa119b8173fbff47c4a00c4d9b89e6
 
 COPY --from=checkout /app/migrations /migrations
 COPY --from=checkout /app/ecosystem.config.js /ecosystem.config.js
