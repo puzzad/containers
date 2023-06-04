@@ -1,11 +1,11 @@
 # Generated from https://github.com/puzzad/containers/kong/Dockerfile.gotpl
-# BOM: {"github:kong/docker-kong":"3.2.2","github:kong/kong":"3.2.2","image:ghcr.io/greboid/dockerfiles/alpine":"e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b"}
+# BOM: {"github:kong/docker-kong":"3.3.0","github:kong/kong":"3.3.0","image:ghcr.io/greboid/dockerfiles/alpine":"0b5d59073fe11b8be58f75b47d7103dc11fa119b8173fbff47c4a00c4d9b89e6"}
 
-FROM ghcr.io/greboid/dockerfiles/alpine@sha256:e05ad3477f38c022bccca78bf22d39f9355bd07a65f4b7d224324c328a84d51b
+FROM ghcr.io/greboid/dockerfiles/alpine@sha256:0b5d59073fe11b8be58f75b47d7103dc11fa119b8173fbff47c4a00c4d9b89e6
 
-ARG KONG_VERSION=3.2.2
+ARG KONG_VERSION=3.3.0
 ENV KONG_VERSION $KONG_VERSION
-ENV TAG=3.2.2
+ENV TAG=3.3.0
 
 RUN set -ex; \
      apk add bash curl ca-certificates git; \
