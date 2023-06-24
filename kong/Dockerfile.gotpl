@@ -10,7 +10,7 @@ RUN set -ex; \
      git -c advice.detachedHead=false clone --depth=1 -b $TAG --single-branch https://github.com/Kong/docker-kong /git; \
      apk add --no-cache --virtual .build-deps tar gzip; \
      tar -C / -xzf /tmp/kong.apk.tar.gz; \
-     apk add --no-cache libstdc++ libgcc openssl pcre perl tzdata libcap zlib zlib-dev bash; \
+     apk add --no-cache libstdc++ libgcc openssl pcre perl tzdata libcap zlib zlib-dev bash yaml; \
      adduser -S kong; \
      addgroup -S kong; \
      mkdir -p "/usr/local/kong"; \
